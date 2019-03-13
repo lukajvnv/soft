@@ -1,0 +1,12 @@
+RA109/2015 Luka Jovanovic
+file	sum
+video-0.avi	-23
+video-1.avi	-17
+video-2.avi	-4
+video-3.avi	-55
+video-4.avi	-43
+video-5.avi	14
+video-6.avi	-73
+video-7.avi	17
+video-8.avi	-4
+video-9.avi	30

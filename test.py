@@ -19,7 +19,7 @@ with open("txt_result_files/res.txt") as file:
 correct = 0
 student = []
 student_results = []
-with open("txt_result_files/out.txt") as file:
+with open("txt_result_files/proba.txt") as file:
     data = file.read()
     lines = data.split('\n')
     for i, line in enumerate(lines):
