@@ -1,10 +1,9 @@
 import cv2
 import numpy as np
 import math
-
+import keras
 from neural_network import train_model, get_model
 from line import Line
-
 from digit import Digit
 
 CHARACTER_Q = ord('q')
@@ -70,10 +69,7 @@ def already_detect_number(num):
 
 
 def out_of_range(num_obj):
-    if num_obj.bottom_r[1] > 470:
-        return True
-    else:
-        return False
+    return num_obj.bottom_r[1] > 470 or num_obj.bottom_r[0] > 620
 
 
 # uocavanje kontura brojeva sa pamcenjem njihovih koordinata
@@ -169,17 +165,17 @@ def detect_number_value_of_number_objects(frame_image, frame_numbers):
             detect_number.detect_value = v
             detect_number.is_detected = True
 
-        if detect_number.passed_blue_line:
+        if detect_number.passed_blue_line and not out_of_range(detect_number):
             cv2.rectangle(frame_image, detect_number.top_l, detect_number.bottom_r, (255, 0, 0), 2)
             # cv2.line(frame, blue_line.first_dot(), detect_number.bottom_r, (0, 0, 255), 5)
 
-        if detect_number.passed_green_line:
+        if detect_number.passed_green_line and not out_of_range(detect_number):
             cv2.rectangle(frame_image, detect_number.top_l, detect_number.bottom_r, (0, 255, 0), 2)
             # cv2.line(frame, green_line.first_dot(), detect_number.bottom_r, (0, 0, 255), 5)
 
 
 # ispitivanje da li je presla preko linije
-def detect_line_crossing(frame_image):
+def detect_line_crossing(frame_image, video_name):
     global br_prelaska_plave
 
     g_first_dot = np.array(green_line.first_dot())
@@ -209,7 +205,7 @@ def detect_line_crossing(frame_image):
             last_sub_digit = number.detect_value
             result -= number.detect_value
 
-    cv2.imshow("cross_line", frame_image)
+    cv2.imshow(video_name, frame_image)
 
 
 def write_result_to_file():
@@ -270,7 +266,7 @@ def write_result_to_file():
 #
 #     frame_numbers = find_numbers_on_frame(frame)
 #     detect_number_value_of_number_objects(frame, frame_numbers)
-#     detect_line_crossing(frame)
+#     detect_line_crossing(frame, video_name)
 #
 #     if cv2.waitKey(20) == CHARACTER_Q or ret is False:
 #         cap.release()
@@ -283,7 +279,6 @@ def write_result_to_file():
 model = get_model()
 # model = train_model()
 # model = keras.models.load_model("model.h5")
-
 result = 0
 detected_numbers = []
 last_added_digit = ""
@@ -306,9 +301,9 @@ for video_num in range(10):
         if video_opened:
             frame_numbers = find_numbers_on_frame(frame)
             detect_number_value_of_number_objects(frame, frame_numbers)
-            detect_line_crossing(frame)
+            detect_line_crossing(frame, video_name)
 
-            if cv2.waitKey(10) == CHARACTER_Q or video_opened is False:
+            if cv2.waitKey(30) == CHARACTER_Q or video_opened is False:
                 cap.release()
                 cv2.destroyAllWindows()
 
@@ -317,7 +312,7 @@ for video_num in range(10):
                 detected_numbers = []
                 break
         else:
-            print("samo iskljucivanje")
+            print("samo iskljucivanje %s" % video_name)
             cap.release()
             cv2.destroyAllWindows()
 

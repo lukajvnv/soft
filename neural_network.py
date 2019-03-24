@@ -1,11 +1,10 @@
 import numpy as np
+import keras
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
-import matplotlib.pyplot as plt
 from keras.utils import np_utils
-import keras
 from keras import backend as K
 
 """Odmah po importu se izvrsi ovo sve sto je u telu"""
@@ -23,6 +22,9 @@ def data_preparation(X_train, Y_train, X_test, Y_test):
                                   # br. ulaznih pod.
         X_train = X_train.reshape(X_train.shape[0], height, width, 1)       # mozda ce se menjati nacin reshape-a
         X_test = X_test.reshape(X_test.shape[0], height, width, 1)
+
+        # X_train = X_train.reshape(X_train.shape[0], 784)  # mozda ce se menjati nacin reshape-a
+        # X_test = X_test.reshape(X_test.shape[0], 784)
 
         X_train = X_train.astype('float32')
         X_test = X_test.astype('float32')
@@ -106,8 +108,8 @@ def train_model():
 
 # laksa nm
 # (X_train, y_train), (X_test, y_test) = mnist.load_data()
-#
-# # building the input vector from the 28x28 pixels
+
+# building the input vector from the 28x28 pixels
 # X_train = X_train.reshape(60000, 784)
 # X_test = X_test.reshape(10000, 784)
 # X_train = X_train.astype('float32')
@@ -120,14 +122,15 @@ def train_model():
 # n_classes = 10
 # Y_train = np_utils.to_categorical(y_train, n_classes)
 # Y_test = np_utils.to_categorical(y_test, n_classes)
-#
-# # building a linear stack of layers with the sequential model
+
+
+# building a linear stack of layers with the sequential model
 # model = Sequential()
-# model.add(Dense(512, input_shape=(784,)))
-# model.add(Activation('relu'))
+# model.add(Dense(512, input_shape=(784,), activation="relu"))
+# # model.add(Activation('relu'))
 # model.add(Dropout(0.2))
 #
-# model.add(Dense(512))
+# model.add(Dense(512, activation="relu"))
 # model.add(Activation('relu'))
 # model.add(Dropout(0.2))
 #
@@ -141,9 +144,9 @@ def train_model():
 # model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
 #
 # # training the model and saving metrics in history
-# history = model.fit(X_train, Y_train,
+# history = model.fit(x_train, x_train,
 #                     batch_size=128, epochs=10,
 #                     verbose=2,
-#                     validation_data=(X_test, Y_test))
+#                     validation_data=(x_test, y_test))
 #
 # model.save('model.h5')
