@@ -105,7 +105,7 @@ def find_numbers_on_frame(frame):
 
 
 def resize_region(region):
-    return cv2.resize(region, (28, 28), interpolation = cv2.INTER_NEAREST)
+    return cv2.resize(region, (28, 28), interpolation=cv2.INTER_NEAREST)
 
 
 def scale_to_range(image):  # skalira elemente slike na opseg od 0 do 1
@@ -278,7 +278,6 @@ def write_result_to_file():
 # ------------------------------------------------------------------------------------------------------------------------
 model = get_model()
 # model = train_model()
-# model = keras.models.load_model("model.h5")
 result = 0
 detected_numbers = []
 last_added_digit = ""

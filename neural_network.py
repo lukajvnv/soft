@@ -3,6 +3,7 @@ import keras
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Dropout, Flatten
+from keras.layers.normalization import BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D
 from keras.utils import np_utils
 from keras import backend as K
@@ -49,9 +50,9 @@ def add_layers(model, shape):
     # prvi sloj
     model.add(Conv2D(filters=32, kernel_size=(3, 3), input_shape=shape))
     model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
     # drugi sloj
-    model.add(Conv2D(filters=16, kernel_size=(3, 3)))
+    # model.add(Conv2D(filters=16, kernel_size=(3, 3)))
     model.add(Conv2D(filters=16, kernel_size=(3, 3)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -64,9 +65,65 @@ def add_layers(model, shape):
     # novije
     model.add(Dense(units=128))
     model.add(Activation('relu'))
-    # model.add(Dense(output_dim=64))
     model.add(Dense(units=64))
     model.add(Activation('relu'))
+
+    # izlazni sloj...
+    model.add(Dense(numberOutput))
+    model.add(Activation('softmax'))
+
+    return model
+
+
+def add_layers_medium(model, shape):
+    # prvi sloj
+    model.add(Conv2D(filters=32, kernel_size=(3, 3), padding='same',
+                     input_shape=shape))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), padding='same'))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), padding='same'))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Flatten())
+    # Densely connected layers
+    model.add(Dense(128))
+    model.add(Activation('relu'))
+
+    # izlazni sloj...
+    model.add(Dense(numberOutput))
+    model.add(Activation('softmax'))
+
+    return model
+
+
+# predugo [losi acc i losss....]
+def add_layers_kaggle(model, shape):
+    # prvi sloj
+    model.add(Conv2D(32, kernel_size=(3, 3), kernel_initializer='he_normal', input_shape=shape))
+    model.add(Activation('relu'))
+
+    model.add(Conv2D(32, kernel_size=(3, 3), kernel_initializer='he_normal'))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D((2, 2)))
+    model.add(Dropout(0.20))
+    model.add(Conv2D(64, (3, 3), padding='same', kernel_initializer='he_normal'))
+    model.add(Activation('relu'))
+    model.add(Conv2D(64, (3, 3), padding='same', kernel_initializer='he_normal'))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+    model.add(Conv2D(128, (3, 3), padding='same', kernel_initializer='he_normal'))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.25))
+    model.add(Flatten())
+    model.add(Dense(128))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+
+    # izlazni sloj...
     model.add(Dense(numberOutput))
     model.add(Activation('softmax'))
 
@@ -98,8 +155,8 @@ def get_model():
 def train_model():
     model = init_method()
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    history = model.fit(x_train, y_train, batch_size=128, epochs=numberEpochs,
-                        validation_data=(x_test, y_test))
+            # train set, labele...
+    model.fit(x_train, y_train, batch_size=128, epochs=numberEpochs, validation_data=(x_test, y_test))
     rez = model.evaluate(x_test, y_test, verbose=1)
     print("Accuracy: %.2f%%" % (rez[1] * 100))
     model.save_weights("neural_network.h5")
